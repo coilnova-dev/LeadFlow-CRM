@@ -1,0 +1,253 @@
+{
+  "name": "LeadFlow CRM - Formulário para Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-form",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8dbf4708-b35f-4e84-b0e5-bf79b6367614",
+      "name": "Webhook",
+      "webhookId": "bed163a6-d9e4-4fa8-b21f-2212c184095d"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "75db14d7-43ad-4181-b218-11c5a645d184",
+              "name": "nome",
+              "value": "={{ $json.body.data.fields[0].value }}",
+              "type": "string"
+            },
+            {
+              "id": "4df7df94-244b-4d64-99c5-3e0bf76e182a",
+              "name": "email",
+              "value": "={{ $json.body.data.fields[1].value }}",
+              "type": "string"
+            },
+            {
+              "id": "f250d601-71b1-42b8-ad4e-7c86604e636f",
+              "name": "telefone",
+              "value": "={{ $json.body.data.fields[2].value }}",
+              "type": "string"
+            },
+            {
+              "id": "10b966ab-8491-43bf-a7e4-30bf67c3704a",
+              "name": "mensagem",
+              "value": "={{ $json.body.data.fields[3].value }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "83ed3386-3336-44db-b9f6-0833d8eaeb76",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sb5ek8e4DgElzpJwSbNjXK8eDezK04ne6fJtEgQ9e24",
+          "mode": "list",
+          "cachedResultName": "Orçamento",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sb5ek8e4DgElzpJwSbNjXK8eDezK04ne6fJtEgQ9e24/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Folha1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sb5ek8e4DgElzpJwSbNjXK8eDezK04ne6fJtEgQ9e24/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "nome": "={{ $json.nome }}",
+            "email": "={{ $json.email }}",
+            "telefone": "={{ $json.telefone }}",
+            "mensagem": "={{ $json.mensagem }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "nome",
+              "displayName": "nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "telefone",
+              "displayName": "telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "mensagem",
+              "displayName": "mensagem",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        656,
+        0
+      ],
+      "id": "fc5e73db-0ffa-4bdc-aa99-dad5875dfa0c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eiPetCmDxilJUwGB",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json.email }}",
+        "subject": "Recebemos o seu pedido de orçamento",
+        "message": "={{ $('Edit Fields').item.json.nome }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        864,
+        0
+      ],
+      "id": "b2dd6f42-52ab-4705-ab62-40e68cb8da13",
+      "name": "Send a message",
+      "webhookId": "93f17865-4576-4b2b-a224-84a8097a8713",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YibYTZz3VMEvQvcd",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "diogossc2@gmail.com",
+        "subject": "Novo pedido de orçamento",
+        "message": "=Novo pedido de orçamento\n\nNome: {{ $('Edit Fields').item.json.nome}}\n\nEmail: {{ $('Edit Fields').item.json.email }}\n\nTelefone: {{ $('Edit Fields').item.json.telefone }}\n\nMensagem: {{ $('Edit Fields').item.json.mensagem }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1072,
+        0
+      ],
+      "id": "7f274d70-27f2-40fc-a228-e3e61c07d240",
+      "name": "Send a message1",
+      "webhookId": "1133e386-490c-44a2-a1e7-ccefae7dea93",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YibYTZz3VMEvQvcd",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7658bd9f-1985-4ee7-b42f-835acba18927",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b20b4e4e6d9a549f18ffc03c66a1e542cb76e73d5bbb83826e79324a4717d6f5"
+  },
+  "nodeGroups": [],
+  "id": "Zx7KWj3OTiXGjCBS",
+  "tags": []
+}
